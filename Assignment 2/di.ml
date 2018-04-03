@@ -72,12 +72,6 @@ let rec extract_first (n, l, r) = match (n, l, r) with
   | (n1, ll::lls, rr) -> extract_first(n1-1, lls, ll::rr)
   | (_, [], _) -> raise EmptyStack;;
 
-
-let rec extract_ith (i , n, l, r) = match (i, n, l, r) with
-  | (0, 1, l1, r1) ->  (l1, r1)
-  | (0, n1, ll::lls, r1) -> extract_ith(0, n1-1, lls, ll)
-  | (i1, n1, ll::lls, r1) -> extract_ith(i1-1, n1-1, lls, r1);;
-
 let rec eval rho e = match e with
   | Cons i -> Const i
   | Abs e1 -> 
@@ -142,11 +136,11 @@ let rec execute ((stack: ans list) , rho, (oplist: opcode list)): ans = match (s
   | (Const(i1)::s, ABS::ops) -> if i1<0 then execute(Const(-i1)::s, rho, ops) else execute(Const(i1)::s, rho, ops)
   | (s, LOOKUP(str)::ops) -> execute(rho(str)::s, rho, ops)
   | (Const(i1)::Const(i2)::s, ADD::ops) -> execute(Const(i1+i2)::s, rho, ops)
-  | (Const(i1)::Const(i2)::s, SUB::ops) -> execute(Const(i1-i2)::s, rho, ops)
+  | (Const(i1)::Const(i2)::s, SUB::ops) -> execute(Const(i2-i1)::s, rho, ops)
   | (Const(i1)::Const(i2)::s, MUL::ops) -> execute(Const(i1*i2)::s, rho, ops)
-  | (Const(i1)::Const(i2)::s, DIV::ops) -> execute(Const(i1/i2)::s, rho, ops)
-  | (Const(i1)::Const(i2)::s, MOD::ops) -> execute(Const(i1 mod i2)::s, rho, ops)
-  | (Const(i1)::Const(i2)::s, EXPO::ops) -> execute(Const(power(i1, i2))::s, rho, ops)
+  | (Const(i1)::Const(i2)::s, DIV::ops) -> execute(Const(i2/i1)::s, rho, ops)
+  | (Const(i1)::Const(i2)::s, MOD::ops) -> execute(Const(i2 mod i1)::s, rho, ops)
+  | (Const(i1)::Const(i2)::s, EXPO::ops) -> execute(Const(power(i2, i1))::s, rho, ops)
   | (s, BOOL(b)::ops) -> execute(Bool(b)::s, rho, ops)
   | (Bool(b)::s, NOT::ops) -> execute(Bool(not b)::s, rho, ops)
   | (Bool(b1)::Bool(b2)::s, AND::ops) -> execute(Bool(b1 && b2)::s, rho, ops)
@@ -156,18 +150,17 @@ let rec execute ((stack: ans list) , rho, (oplist: opcode list)): ans = match (s
     | _ -> execute(Bool(true)::s, rho, ops))
   | (Const(i1)::Const(i2)::s, EQ::ops) -> execute(Bool(i1==i2)::s, rho, ops)
   | (Bool(i1)::Bool(i2)::s, EQ::ops) -> execute(Bool(i1==i2)::s, rho, ops)
-  | (Const(i1)::Const(i2)::s, LT::ops) -> execute(Bool(i1<i2)::s, rho, ops)
-  | (Const(i1)::Const(i2)::s, GT::ops) -> execute(Bool(i1>i2)::s, rho, ops)
-  | (Const(i1)::Const(i2)::s, GE::ops) -> execute(Bool(i1>=i2)::s, rho, ops)
-  | (Const(i1)::Const(i2)::s, LE::ops) -> execute(Bool(i1<=i2)::s, rho, ops)
+  | (Const(i1)::Const(i2)::s, LT::ops) -> execute(Bool(i2<i1)::s, rho, ops)
+  | (Const(i1)::Const(i2)::s, GT::ops) -> execute(Bool(i2>i1)::s, rho, ops)
+  | (Const(i1)::Const(i2)::s, GE::ops) -> execute(Bool(i2>=i1)::s, rho, ops)
+  | (Const(i1)::Const(i2)::s, LE::ops) -> execute(Bool(i2<=i1)::s, rho, ops)
   | (Const(i)::s, NTUP::ops) -> (match extract_first (i, s, []) with 
     |(ll,rr) -> execute(Tuple(i, (rr))::ll, rho, ops))
-  | (Const(i)::Const(n)::s, PROJ::ops) -> (match extract_ith (n-i-1, n, s, Const(0)) with 
-    |(l1, Const(r)) -> execute(Const(r)::l1, rho, ops)
-    |(l1, Bool(r)) -> execute(Bool(r)::l1, rho, ops));;
+  | (Const(i)::Const(n)::s, PROJ::ops) -> (match extract_first (n, s, []) with 
+    |(l1, r1) -> execute((List.nth (r1) (i))::l1, rho, ops));;
 
 (* example 0 *)
-let rho0 s = match s with "x" -> Bool(true) | "y" -> Const(3);; 
+(* let rho0 s = match s with "x" -> Bool(true) | "y" -> Const(3);; 
 
 let e0 = Proj(Cons(1), 3, [Not(And(Boolean(false), Ident("x"))); Abs(Mul(Ident("y"), Cons(-1))); Cons(2)]);;
 let c0 = compile(e0);;
@@ -180,4 +173,90 @@ let rho1 s = match s with "x" -> Bool(false) | "y" -> Const(4);;
 let e1 = Ntuple(3, [Not(Or(Boolean(true), Ident("x"))); Abs(Expo(Ident("y"), Cons(5))); Imply(Boolean(false), Ident "x")]);;
 let c1 = compile(e1);;
 let eval_val1 = eval rho1 e1;;
-let exec_val1 = execute([], rho1, c1);;
+let exec_val1 = execute([], rho1, c1);; *)
+
+let rho7 s = match s with "iden1" -> Const(1) | "iden2" -> Const(2);;
+
+(* eval *)
+
+eval rho7 (Add(Cons(1),Cons(2)));;
+eval rho7 (Mul(Cons(6),Cons(6)));;
+eval rho7 (Expo(Cons(2),Cons(4)));;
+eval rho7 (Div(Cons(6),Cons(3)));;
+eval rho7 (Ident("iden1"));;
+eval rho7 (Ident("iden2"));;
+
+eval rho7 (Abs(Cons(-1)));;
+eval rho7 (Proj(Cons(2),3,[Cons(12);Cons(121);Cons(33)]));;
+
+eval rho7 (Sub(Proj(Cons(2),3,[Cons(2);Cons(5);Cons(8)]),Cons(1)));;
+eval rho7 (Mod(Proj(Cons(2),3,[Cons(2);Cons(5);Cons(8)]),Cons(2)));;
+
+(* eval rho7 (Or(
+	Eq(Cons(5),Cons(5)),
+	And(Eq(Sub(Cons(2),Cons(1)),Cons(1)),
+		Mod(Proj(Cons(2),3,[Cons(2);Cons(5);Cons(8)]),Cons(2))
+	)
+));; *)
+
+eval rho7 (And(Boolean(true), Boolean(false)));;
+eval rho7 (Imply(Not(Imply(Or(Boolean(true), Boolean(false)), And(Boolean(true), Boolean(false)))),Imply(And(Boolean(true), Boolean(false)), Or(Boolean(true), Boolean(false)))));;
+
+eval rho7 ((Ge(Cons(4),Cons(2))));;
+eval rho7 ((Le(Cons(4),Cons(2))));;
+
+(* compile *)
+
+((compile (Add(Cons(1),Cons(2)))));;
+((compile (Mul(Cons(6),Cons(6)))));;
+((compile (Expo(Cons(2),Cons(4)))));;
+((compile (Div(Cons(6),Cons(3)))));;
+((compile (Ident("iden1"))));;
+((compile (Ident("iden2"))));;
+
+((compile (Abs(Cons(-1)))));;
+((compile (Proj(Cons(2),3,[Cons(12);Cons(121);Cons(33)]))));;
+
+((compile (Sub(Proj(Cons(2),3,[Cons(2);Cons(5);Cons(8)]),Cons(1)))));;
+((compile (Mod(Proj(Cons(2),3,[Cons(2);Cons(5);Cons(8)]),Cons(2)))));;
+
+(* execute ([], rho7, (compile (Or(
+	Eq(Cons(5),Cons(5)),
+	And(Eq(Sub(Cons(2),Cons(1)),Cons(1)),
+		Mod(Proj(Cons(2),3,[Cons(2);Cons(5);Cons(8)]),Cons(2))
+	)
+))));; *)
+
+((compile(And(Boolean(true), Boolean(false)))));;
+((compile(Imply(Not(Imply(Or(Boolean(true), Boolean(false)), And(Boolean(true), Boolean(false)))),Imply(And(Boolean(true), Boolean(false)), Or(Boolean(true), Boolean(false)))))));;
+
+((compile(Ge(Cons(4),Cons(2)))));;
+((compile(Le(Cons(4),Cons(2)))));;
+
+(* execute *)
+
+execute ([], rho7, (compile (Add(Cons(1),Cons(2)))));;
+execute ([], rho7, (compile (Mul(Cons(6),Cons(6)))));;
+execute ([], rho7, (compile (Expo(Cons(2),Cons(4)))));;
+execute ([], rho7, (compile (Div(Cons(6),Cons(3)))));;
+execute ([], rho7, (compile (Ident("iden1"))));;
+execute ([], rho7, (compile (Ident("iden2"))));;
+
+execute ([], rho7, (compile (Abs(Cons(-1)))));;
+execute ([], rho7, (compile (Proj(Cons(2),3,[Cons(12);Cons(121);Cons(33)]))));;
+
+execute ([], rho7, (compile (Sub(Proj(Cons(2),3,[Cons(2);Cons(5);Cons(8)]),Cons(1)))));;
+execute ([], rho7, (compile (Mod(Proj(Cons(2),3,[Cons(2);Cons(5);Cons(8)]),Cons(2)))));;
+
+(* execute ([], rho7, (compile (Or(
+	Eq(Cons(5),Cons(5)),
+	And(Eq(Sub(Cons(2),Cons(1)),Cons(1)),
+		Mod(Proj(Cons(2),3,[Cons(2);Cons(5);Cons(8)]),Cons(2))
+	)
+))));; *)
+
+execute ([], rho7, (compile(And(Boolean(true), Boolean(false)))));;
+execute ([], rho7, (compile(Imply(Not(Imply(Or(Boolean(true), Boolean(false)), And(Boolean(true), Boolean(false)))),Imply(And(Boolean(true), Boolean(false)), Or(Boolean(true), Boolean(false)))))));;
+
+execute ([], rho7, (compile(Ge(Cons(4),Cons(2)))));;
+execute ([], rho7, (compile(Le(Cons(4),Cons(2)))));;

@@ -1,0 +1,35 @@
+alphabet=["1"; "2"; "a"; "b"; "c"; "A"];;
+
+lgh Nil;;
+lgh "a";;
+lgh "abc";;
+lgh "12";;
+
+nonempty Nil;;
+nonempty "a";;
+nonempty "12";;
+
+concat Nil Nil;;
+concat Nil "a";;
+concat "1" Nil;;
+concat "1A" "abc";;
+
+reverse Nil;;
+reverse "abc";;
+reverse "12";;
+
+first Nil;;
+first "a";;
+first "abc";;
+
+last Nil;;
+last "a";;
+last "abc";;
+
+let editable = create "abac12a2aAac211";;
+
+forward editable;;
+back editable;;
+moveTo editable 10;;
+replace editable "b";;
+

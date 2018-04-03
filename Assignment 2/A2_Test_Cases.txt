@@ -1,0 +1,36 @@
+(* Note:
+ * Please make suitable changes to the shared test cases so that
+ * the constructors match your signature definition.
+ *)
+
+(*--==Compile & Execute==--*)
+
+Plus(Cons(1),Cons(2));
+Mul(Cons(6),Cons(6));
+Expo(Cons(2),Cons(4));
+Div(Cons(6),Cons(3));
+Ident("iden1");
+Ident("iden2");
+
+Abs(Cons(-1));
+Proj(Tup([Cons(12),Cons(121),Cons(33)]),2);
+
+Sub(Proj(Tup[Cons(2),Cons(5),Cons(8)],2),Cons(1));
+Mod(Proj(Tup[Cons(2),Cons(5),Cons(8)],2),Cons(2));
+
+Or(
+	Eq(Cons(5),Cons(5)),
+	And(Eq(Sub(Cons(2),Cons(1)),Cons(1)),
+		Mod(Proj(Tup[Cons(2),Cons(5),Cons(8)],2),Cons(2))
+	)
+);
+
+And(Bool(T), Bool(F));
+Implies(NOT(Implies(Or(Bool(T), Bool(F)), And(Bool(T), Bool(F)))),Implies(And(Bool(T), Bool(F)), Or(Bool(T), Bool(F))));
+
+Ge(Cons(4),Cons(2));
+Le(Cons(4),Cons(2));
+(* Ifthenelse(Gtr(Cons(4),Cons(2)),Plus(Cons(1),Cons(3)),Sub(Cons(1),Cons(3)));
+
+(* Lambda is a lambda function of type exp*exp and LetinEnd is a ternary operator of type exp*exp*exp *)
+Apply(Lambda(Ident("x"),LetinEnd(Para[Assgn(Ident("a"),Cons(2))],Plus(Ident("a"),Ident("x")))),Cons(2)) *)
