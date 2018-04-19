@@ -7,7 +7,8 @@ where \x.e_1 is to be read as "\lambda x. e_1"
 
 {
 
-In addition, to make things interesting, you can add the booleans T and F, and an if_then_else expression.  And tuples.
+In addition, to make things interesting, you can add the booleans T and F, and an if_then_else 
+expression.  And tuples.
 
 You can also introduce the natural numbers, addition (perhaps multiplication) and comparisons (=, >)
 
@@ -19,7 +20,8 @@ For the language you take, you should design and implement (in OCaml) the follow
 
 1.  The Krivine Machine (in closure form), that implements Call-by-Name semantics.
 
-For this you need to consider Closures as a pair of a Table and an expression, where a Table is a partial function from variables to Answers (including value closures).
+For this you need to consider Closures as a pair of a Table and an expression, where a Table is a 
+partial function from variables to Answers (including value closures).
 
 
 
@@ -33,4 +35,5 @@ You also need to implement the compile function.
 
 Extra credit for additional features.
 
-Most importantly, you need to provide inputs that demonstrate that your implementations of the two machines run correctly.
+Most importantly, you need to provide inputs that demonstrate that your implementations of the 
+two machines run correctly.

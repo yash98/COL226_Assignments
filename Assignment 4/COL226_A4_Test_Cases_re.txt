@@ -1,0 +1,93 @@
+(*
+ * Note: you need to change the following datatype and expressions as per your submitted code
+ * Please do the changes before you come for demo.
+ *)
+
+datatype exp = Cons of int
+			| Boolean of Boolean
+			| Var of string
+			| List of exp list (* Not implemented *)
+			| Add of exp * exp
+			| Sub of exp * exp
+			| Mul of exp * exp
+			| Div of exp * exp
+			| Tup of exp list (* Not implemented *)
+			| Proj of exp * int (* Not implemented *)
+			| Gt of exp * exp
+			| Lt of exp * exp
+			| Eq of exp * exp
+			| If of exp * exp * exp
+			| Lambda of exp * exp
+			| Call of exp * exp
+			| Let of exp * exp
+			| Assgn of exp * exp (* Not implemented *)
+			| Seq of exp list (* Not implemented *)
+			| Para of exp list (* Not implemented *)
+			| Localinend of exp list * exp (* Not implemented *)
+			| Dec of exp list
+			| Ctup of closure list
+			| At of int
+			| Bind of exp
+			
+			| Restp of exp
+			| Tothisp of exp
+			| Rests of exp
+			| Tothiss of exp
+			| Restm of exp
+			| Tothism of exp
+			| Restd of exp
+			| Tothisd of exp
+			| Restg of exp
+			| Tothisg of exp
+			| Restl of exp
+			| Tothisl of exp
+			| Reste of exp
+			| Tothise of exp
+			| Ifthn of exp * exp
+			| Lets of exp*exp
+			and
+			closure = ACL of (exp * closure) list * exp
+
+
+
+krivine(ACL([(Var("z"),ACL([],Cons(3)))],Var("z")),[]);;
+
+krivine(ACL([],Add(Add(Cons(2),Cons(3)),Add(Cons(2),Cons(3)))),[]);;
+
+krivine(ACL([(Var("z"),ACL([],Cons(3)))],Add(Cons(2),Var("z"))),[]);;
+
+krivine(ACL([],Call(Lambda(Var("x"),Add(Var("x"),Cons(1))),Cons(2))),[]);;
+
+krivine(ACL([],Call(Lambda(Var("x"),Mul(Var("x"),Add(Var("x"),Cons(1)))),Cons(2))),[]);;
+
+krivine(ACL([],Call(Lambda(Var("x"),Call(Lambda(Var("d"),Mul(Var("d"),Cons(2))),Cons(2))),Cons(2))),[]);;
+
+krivine(ACL([],If(Gt(Cons(8),Cons(2)),Call(Lambda(Var("x"),Div(Var("x"),Cons(2))),Cons(2)),Call(Lambda(Var("x"),Mul(Var("x"),Add(Var("x"),Cons(1)))),Cons(2)))),[]);;
+
+krivine(ACL([],If(Gt(Cons(1),Cons(2)),Call(Lambda(Var("x"),Div(Var("x"),Cons(2))),Cons(2)),Call(Lambda(Var("x"),Mul(Var("x"),Add(Var("x"),Cons(1)))),Cons(2)))),[]);;
+
+krivine(ACL([],Let(Para[Assgn(Var("a"),Cons(2))],Add(Var("a"),Cons(20)))),[]);;
+
+krivine(ACL([],Let(Seq[Assgn(Var("a"),Cons(2))],Add(Var("a"),Cons(20)))),[]);;
+
+(* krivine(ACL([],Proj(Tup([Cons(1),Cons(2),Cons(3)]),2)),[]);; *)
+
+krivine(ACL([],Call(Lambda(Var("x"),Let(Para[Assgn(Var("a"),Cons(2))],Add(Var("a"),Var("x")))),Cons(2))),[]);;
+
+
+(* SECD([Proj(Tup([Cons(12),Cons(121),Cons(33)]),2)]);; *)
+
+SECD([Let(Para([Assgn(Var("a"),Cons(1)),Assgn(Var("b"),Cons(2)),Assgn(Var("c"),Cons(3))]),Add(Add(Var("a"),Var("b")),Mul(Var("c"),Cons(2)))),Mul(Cons(2),Cons(3))]);;
+
+SECD([If(Gt(Cons(4),Cons(2)),Add(Cons(1),Cons(3)),Sub(Cons(1),Cons(3)))]);;
+
+SECD([Let(Dec([Para([Assgn(Var("f"),Boolean(false))]),Seq([Assgn(Var("a"),Cons(1)),Assgn(Var("b"),Cons(2)),Assgn(Var("c"),Cons(3))])]),Add(Add(Var("a"),Var("b")),Mul(Var("c"),Cons(2)))),Mul(Cons(2),Cons(3))]);;
+
+SECD([Call(Lambda(Var("x"),Add(Var("x"),Cons(1))),Cons(2))]);;
+
+SECD([Call(Lambda(Var("x"),Mul(Var("x"),Add(Var("x"),Cons(1)))),Cons(2))]);;
+
+SECD([Call(Lambda(Var("x"),Call(Lambda(Var("d"),MulVar("d"),Cons(2))),Cons(2))),Cons(2)]);;
+
+SECD([Seq([Assgn(Var("a"),Let(Para([Assgn(Var("a"),Cons(1))]),Call(Lambda(Var("x"),Add(Var("x"),Cons(1))),Var("a"))))]),Add(Var("a"),Cons(1))]);
+

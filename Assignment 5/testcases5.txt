@@ -1,0 +1,77 @@
+%s
+hastype([("X",intT),("Y",intT)],"X",T).
+hastype([(("X"),(boolT)),(("X"),(intT))],("X"),T).
+
+%ants
+hastype([],-652,T).
+hastype([],true,T).
+
+%arithmetic
+hastype([],add(sub(2,5), div(6,mul(2,5))),T).
+
+%boolean
+hastype([(("X"),(boolT))],and(imply(or(("X"), false), true),imply(("X"), neg(false))),T).
+
+%comparison
+%wrong
+hastype([("X",boolT),("Y",boolT)],or(and(gt(-2, 6), lt(3,100)),imply(equality(5, "Y"), "X")),T).
+%correct
+hastype([("X",boolT),("Y",intT)],or(and(gt(-2, 6), lt(3,100)),imply(equality(5, "Y"), "X")),T).
+
+%equality
+hastype([],equality(nTuple([nTuple([1,3]),true]),nTuple([1, 3,true])),T).
+
+%if then else
+hastype([(("X"),(boolT)),(("Y"),(intT))],if_then_else(and(("X"),gt(("Y"),0)),("Y"),("X")),T).
+
+%let d in e
+hastype([(("Y"),(intT))],let_in("X",3,add(("Y"),("X"))),T).
+hasType([("y",(intT))],let_in("y",3,mul("y",5)),T).
+
+%abstraction
+hastype( [("x", (boolT)), ("w", (boolT))], abstract("x", "w"), arrow((boolT), (boolT))).
+
+%application
+hastype([("r", arrow((boolT),(boolT))), ("s", (boolT))], apply("r", "s"), (boolT)).
+hastype([("r", arrow((boolT),(boolT))), ("s", (boolT)), ("s", (boolT)), ("r", arrow((boolT),(boolT)))], apply("r", "s"), X).
+
+
+%n-nTuple
+hastype([("x", (boolT)), ("w", (boolT))], nTuple("x", "w", and("x", "y")), cartesian((boolT), (boolT))).
+
+%projection
+% not made projection + tuple([anyT,anyT,....])
+hastype([("y", (boolT)), ("z", (boolT))], proj(nTuple("x","w", and("x", "y")) 1), (boolT)).
+
+%ructors
+% not implemented
+hastype([((r), (boolT))] ,inl((r)), disjunction((boolT),(boolT))).
+hastype([((r), (boolT))] ,inl((r)), X).
+hastype([((r), (boolT))] ,inr((r)), disjunction((boolT),(boolT))).
+
+%case analysis
+%not implemeneted
+hastype([((t), (boolT)), ((r), (boolT))], case(inl((t)), (r)), (boolT)).
+hastype([((t), (boolT)), ((r), (boolT))], case(inr((t)), (r)), (boolT)).
+
+
+%type elaborates
+
+typeElaborates([],def(("X"),add(3,4)),T).
+typeElaborates([],def(("Y"),true),T).
+typeElaborates([],par(def(("X"),3),def(("Y"),true)),T).
+typeElaborates([],par(def(("X"),3),def(("X"),true)),T).
+typeElaborates([],seq(def(("X"),mul(31,20)),def(("Y"),true)),T).
+typeElaborates([(("X"),boolT),(("Y"),intT)],local(def(("X"),31),par(def(("X"),nTuple([("Y")])),def(("Y"),false))),T).
+typeElaborates([(("X"),boolT),(("Y"),intT)],local(def(("X"),20),par(def(("X"),3),def(("Y"),false))),T).
+typeElaborates([("x",(intT))],def("y",9),Gamma).
+
+typeElaborates([("x",(intT))],seq(def("z",true),def("y",false)),Gamma).
+
+typeElaborates([("x",(intT))],par(def("z",(9)),def("y",0)),Gamma).
+
+typeElaborates([("x",(intT))],local(def("z",(9)),def("y",(4))),Gamma).
+
+typeElaborates([("x",(intT))],par(seq(def("z",(8)),def("y",(true))),def("y",(false))),Gamma).
+
+typeElaborates([("x",(intT))],seq(par(def("z",(45)),def("y",(false))),def("y",(8))),Gamma).

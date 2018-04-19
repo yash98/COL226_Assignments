@@ -1,0 +1,11 @@
+hastype([("X", boolT)], equality("X", 7), T).
+typeElaborates([], seq(def("X", add(3, 6)), def("Y", add("X", 3))), Gamma2).
+hastype([], let_in("X", add(6, 3), add("X", 3)), T).
+hastype([], abstract("X", add("X", 3)), T).
+hastype([], abstract("X", let_in("X", 3, "X")), T).
+hastype([], apply(abstract("X", let_in("X", 3, "X")), 3), T).
+typeElaborates([("X", intT)], seq(bind("X", boolT), def("Y", if_then_else("X", 1, 3))), G).
+typeElaborates([("X", intT)], seq(bind("X", intT), def("Y", if_then_else("X", 1, 3))), G).
+typeElaborates([("X", intT)], par(bind("X", boolT), def("Y", if_then_else("X", 1, 3))), G).
+typeElaborates([("X", intT)], local(bind("X", boolT), def("Y", if_then_else("X", 1, 3))), G).
+hastype([], nTuple([true, 3, nTuple([3, false]), abstract("X", let_in("X", 3, "X"))]), T).
